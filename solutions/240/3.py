@@ -1,31 +1,24 @@
 class Solution:
-    # binary searches a row of a 2D matrix, starting at `col_min`
-    def horizontal_binary_search(self, matrix, target, row, col_min):
-        lo = col_min
-        hi = len(matrix[0])-1
-        while hi >= lo:
-            mid = (lo + hi)//2
-            if matrix[row][mid] < target:
-                lo = mid + 1
-            elif matrix[row][mid] > target:
-                hi = mid - 1
-            else: # found target
-                return True
-        
-        return False
+    def binary_search(self, matrix, target, start, vertical):
+        lo = start
+        hi = len(matrix[0])-1 if vertical else len(matrix)-1
 
-    # binary searches a column of a 2D matrix, from 0 up to `row_max`
-    def vertical_binary_search(self, matrix, target, row_max, col):
-        lo = 0
-        hi = row_max
         while hi >= lo:
             mid = (lo + hi)//2
-            if matrix[mid][col] < target:
-                lo = mid + 1
-            elif matrix[mid][col] > target:
-                hi = mid - 1
-            else: # found target
-                return True
+            if vertical: # searching a column
+                if matrix[start][mid] < target:
+                    lo = mid + 1
+                elif matrix[start][mid] > target:
+                    hi = mid - 1
+                else:
+                    return True
+            else: # searching a row
+                if matrix[mid][start] < target:
+                    lo = mid + 1
+                elif matrix[mid][start] > target:
+                    hi = mid - 1
+                else:
+                    return True
         
         return False
 
@@ -35,11 +28,9 @@ class Solution:
             return False
 
         # iterate over matrix diagonals starting in bottom left.
-        row_descending = range(len(matrix)-1, -1, -1)
-        col_ascending = range(len(matrix[0]))
-        for row, col in zip(row_descending, col_ascending):
-            vertical_found = self.vertical_binary_search(matrix, target, row, col)
-            horizontal_found = self.horizontal_binary_search(matrix, target, row, col)
+        for i in range(min(len(matrix), len(matrix[0]))):
+            vertical_found = self.binary_search(matrix, target, i, True)
+            horizontal_found = self.binary_search(matrix, target, i, False)
             if vertical_found or horizontal_found:
                 return True
         
